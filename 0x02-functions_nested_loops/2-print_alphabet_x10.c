@@ -19,6 +19,6 @@ putchar(c);
 c++;
 }
 n++;
-}
 putchar('\n');
+}
 }
