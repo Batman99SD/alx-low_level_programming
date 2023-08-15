@@ -13,7 +13,7 @@ while (n <= 10)
 {
 char c = 'a';
 
-while (c < 'z')
+while (c <= 'z')
 {
 putchar(c);
 c++;
