@@ -1,6 +1,6 @@
 #include "main.h"
 /**
- * _ialpha - _isalpha: print 1 if lowercase.
+ * _isalpha - _isalpha: print 1 if lowercase.
  * @c: cheks input of function
  *  Return: return 1 if 'c' is lower
  *          otherwise always 0.
