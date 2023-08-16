@@ -5,11 +5,11 @@
  *  Return: return 1 if 'c' is lower
  *          otherwise always 0.
  **/
-int _islower(int c)
+int _isalpha(int c)
 {
 if (c >= 65 && c <= 90)
 return (1);
-if (c >= 97 && c <= 122
+if (c >= 97 && c <= 122)
 return (1);
 return (0);
 }
