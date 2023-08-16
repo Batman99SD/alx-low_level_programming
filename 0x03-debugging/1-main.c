@@ -15,7 +15,9 @@ int main(void)
 
         while (i < 10)
         {
-                putchar(i);/*@i dosn't incrase*/
+                putchar(i);
+		/**@i dosn't incrase
+		*/
         }
 
         printf("Infinite loop avoided! \\o/\n");
