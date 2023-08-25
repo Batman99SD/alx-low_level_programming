@@ -1,4 +1,7 @@
 #include <stdio.h>
+/**
+ * maim - main prints 98.
+ */
 
 int main(void)
 {
