@@ -1,6 +1,6 @@
 #include "lists.h"
 /**
- * add_nodeint_end: Adds node to the end of listint_t.
+ * add_nodeint_end - Adds node to the end of listint_t.
  * @head: Pointer point to the head of the list.
  * @n: Value to be stored in the new node.
  * Return: The address of the new element, or NULL if it failed.
