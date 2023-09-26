@@ -1,5 +1,4 @@
 #include "lists.h"
-#include <stdio>
 
 /**
  * print_listint - Prints all elements of a listint_t list.
