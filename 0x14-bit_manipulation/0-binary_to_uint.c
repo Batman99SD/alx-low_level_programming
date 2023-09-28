@@ -1,9 +1,11 @@
 #include "main.h"
+
 /**
  *binary_to_uint - convert from binary to decemal.
  *@b: string contain the binary number.
  *Return: returns 0 or unsigned int.
  */
+
 unsigned int binary_to_uint(const char *b)
 {
 	unsigned int result = 0;
