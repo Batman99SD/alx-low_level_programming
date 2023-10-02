@@ -1,78 +1,68 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <fcntl.h>
-#include <errno.h>
+#include <unistd.h>
 
-#define BUF_SIZE 1024
+void check_io_status(int status, const char *file_name, char mode);
 
-void exit_with_error(int code, const char *message)
-{
-	dprintf(STDERR_FILENO, "%s\n", message);
-	exit(code);
-}
-
+/**
+ * main - Copies the content of one file to another.
+ * @argc: Argument count.
+ * @argv: Arguments passed.
+ *
+ * Return: 0 on success, exit otherwise.
+ */
 int main(int argc, char *argv[])
 {
-	const char *file_from, *file_to;
-	int fd_from, fd_to;
-	char buffer[BUF_SIZE];
-	ssize_t bytes_read, bytes_written;
+	int src, dest;
+	ssize_t n_read, wrote;
+	unsigned int mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH;
+	char buffer[1024];
 
 	if (argc != 3)
-		exit_with_error(97, "Usage: cp file_from file_to");
-
-	file_from = argv[1];
-	file_to = argv[2];
-
-	fd_from = open(file_from, O_RDONLY);
-	if (fd_from == -1)
 	{
-		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", file_from);
-		exit(98);
+		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
+		exit(97);
 	}
 
-	fd_to = open(file_to, O_WRONLY | O_CREAT | O_TRUNC, 0664);
-	if (fd_to == -1)
+	src = open(argv[1], O_RDONLY);
+	check_io_status(src, argv[1], 'O');
+
+	dest = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, mode);
+	check_io_status(dest, argv[2], 'W');
+
+	while ((n_read = read(src, buffer, sizeof(buffer))) > 0)
 	{
-		dprintf(STDERR_FILENO, "Error: Can't write to file %s\n", file_to);
-		close(fd_from);
-		exit(99);
+		wrote = write(dest, buffer, n_read);
+		if (wrote == -1)
+			check_io_status(-1, argv[2], 'W');
 	}
 
-	while ((bytes_read = read(fd_from, buffer, BUF_SIZE)) > 0)
-	{
-		bytes_written = write(fd_to, buffer, bytes_read);
-		if (bytes_written == -1)
-		{
-			dprintf(STDERR_FILENO, "Error: Can't write to file %s\n", file_to);
-			close(fd_from);
-			close(fd_to);
-			exit(99);
-		}
-	}
-
-	if (bytes_read == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", file_from);
-		close(fd_from);
-		close(fd_to);
-		exit(98);
-	}
-
-	if (close(fd_from) == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd_from);
-		close(fd_to);
-		exit(100);
-	}
-
-	if (close(fd_to) == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd_to);
-		exit(100);
-	}
+	close(src);
+	close(dest);
 
 	return (0);
 }
 
+/**
+ * check_io_status - Checks if a file operation was successful.
+ * @status: The status of the operation(e.g., file descriptor or return value)
+ * @file_name: Name of the file.
+ * @mode: 'O' for open, 'W' for write.
+ *
+ * Return: void.
+ */
+void check_io_status(int status, const char *file_name, char mode)
+{
+	if (status == -1)
+	{
+		if (mode == 'O')
+			dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", file_name);
+		else if (mode == 'W')
+			dprintf(STDERR_FILENO, "Error: Can't write to %s\n", file_name);
+
+		exit((mode == 'O') ? 98 : 99);
+	}
+}
